@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.kehu.mapper.ProInfoMapper"><!-- mapper.java文件的全类名 -->
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap" type="com.situ.crm.kehu.model.ProInfoModel">
+		<result column="id" property="id" />
+		<result column="pro_code" property="proCode" />
+	    <result column="pro_name" property="proName" />
+		<result column="sum" property="sum" />
+		<result column="cost" property="cost" />
+	</resultMap>
+
+	<!-- table all fields   sql片段 -->
+	<sql id="Base_Column_List">
+		id,pro_code,pro_name,sum,cost
+	</sql>
+
+	<!-- 查询条件 （sql片段）-->
+	<sql id="Example_Where_Clause">
+		where 1=1 
+		<!-- 	<if test="id != 0">
+				and id = #{id}
+			</if> -->
+			<if test="proCode != null and proCode != ''">
+				and pro_code like #{proCode}
+			</if>
+			<if test="proName != null and proName != ''">
+				and pro_name like #{proName}
+			</if>
+			<if test="sum != null and sum != ''">
+				and sum = #{sum}
+			</if>
+			<if test="cost != null and cost != ''">
+				and cost = #{cost}
+			</if>
+			
+	</sql>
+
+	<!-- 插入记录 -->
+	<!--selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，  
+        keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应  
+        order AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键，  
+              BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了，  
+                    这种适合那种主键不是自增的类型  
+        resultType 主键类型 -->  
+<!-- 		<selectKey resultType="java.lang.Integer"  -->
+<!-- 		order="AFTER" keyProperty="id"> -->
+<!-- 			SELECT LAST_INSERT_ID() -->
+<!-- 		</selectKey> -->
+	<insert id="insert" parameterType="Object">
+		insert into guan_li.product_info(pro_code,pro_name,sum,cost)
+		values(#{proCode},#{proName},#{sum},#{cost})
+	</insert>
+	
+	<!-- 删除记录 -->
+<delete id="delete" parameterType="Object">
+delete from guan_li.product_info where pro_code = #{proCode} <!-- 如果传进来的参数不是实体类，那么{}里的是参数名 -->
+	</delete> 
+	
+	<delete id="deleteModel" parameterType="Object">
+		delete from guan_li.product_info
+<include refid="Example_Where_Clause" />
+	</delete> 
+
+	<!-- 根据，修改记录 -->
+<!-- 	<update id="update" parameterType="Object"> -->
+<!-- 		update st_jsp.user set -->
+<!-- 		username = #{name}, password = #{pass} -->
+<!-- 		where usercode = #{code} -->
+<!-- 	</update> -->
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateActive" parameterType="Object">
+		update guan_li.product_info set 
+		<trim suffixOverrides=",">
+			<if test="proName != null and proName != '' ">
+				pro_name = #{proName},
+			</if>
+				<if test="sum != null and sum != '' ">
+				sum = #{sum},
+			</if>
+				<if test="cost != null and cost != '' ">
+				cost = #{cost},
+			</if>
+		</trim>
+		where pro_code = #{proCode}
+	</update>
+
+	<!-- 根据查询 系统用户 -->
+	<select id="selectId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.product_info where pro_code = #{proCode}
+	</select>
+
+	<!-- 系统用户 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer" 
+	parameterType="Object">
+		select count(1) from guan_li.product_info
+		<include refid="Example_Where_Clause" />
+	</select>
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="ProInfoModel">
+		select <include refid="Base_Column_List" />
+		from guan_li.product_info
+		<include refid="Example_Where_Clause" />
+		 limit ${rowStart},${pageLimit}
+	</select>
+	<select id="selectList" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.product_info
+		<include refid="Example_Where_Clause" />
+		
+	</select>
+	
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.product_info
+		<include refid="Example_Where_Clause" />
+	</select>
+
+</mapper>   

@@ -1,0 +1,29 @@
+#配置程序端口，默认为8080
+#配置默认访问路径，默认为/
+mybatis:
+  mapper-locations: classpath:com/**/*.xml
+  #配置mapper.xml中参数类型的别名
+   #配置mapper.xml中参数类型的别名
+    #配置mapper.xml中参数类型的别名
+  type-aliases-package: com.situ.crm.grant.model,com.situ.crm.kehu.model
+  configuration:
+       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  
+server:
+  port: 8080
+  servlet:
+    context-path: /test3
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: nizhidaowxtma.
+    url: jdbc:mysql://127.0.0.1:3306/guan_li?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong
+    username: root
+  mvc:
+    view:
+      prefix: /web/
+      suffix: .jsp
+#logging:
+#  level:
+#    com.situ.crm.grant.mapper: debug
+#    com.situ.crm.kehu.mapper: debug

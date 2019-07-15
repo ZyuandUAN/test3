@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.grant.mapper.UserMapper"><!-- mapper.java文件的全类名 -->
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap" type="com.situ.crm.grant.model.UserModel">
+		<result column="id" property="id" />
+		<result column="user_code" property="userCode" />
+	    <result column="user_pass" property="pass" />
+		<result column="user_name" property="name" />
+		<result column="role_code" property="roleCode" />
+ 	    <result column="parent_code" property="parentCode" /> 
+		<result column="admin" property="admin" />
+		<result column="role_name" property="roleName" />
+		
+	</resultMap>
+
+	<!-- table all fields   sql片段 -->
+	<sql id="Base_Column_List">
+		id,user_code,user_pass,user_name,role_code,
+		parent_code,
+		admin,
+		(select c.role_name from guan_li.role c where c.role_code=guan_li.user.role_code) role_name
+	</sql>
+
+	<!-- 查询条件 （sql片段）-->
+	<sql id="Example_Where_Clause">
+		where 1=1 
+		<!-- 	<if test="id != 0">
+				and id = #{id}
+			</if> -->
+			<if test="userCode != null and userCode != ''">
+				and user_code like #{userCode}
+			</if>
+			<if test="name != null and name != ''">
+				and user_name like #{name}
+			</if>
+			<if test="pass != null and pass != ''">
+				and user_pass = #{pass}
+			</if>
+			<if test="admin != null and admin != ''">
+				and admin = #{admin}
+			</if>
+			<if test="parentCode != null and parentCode != ''">
+				and parent_code = #{parentCode}
+			</if>
+			<if test="roleCode != null and roleCode != ''">
+				and role_code = #{roleCode}
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and role_name = #{roleName}
+			</if>
+			
+	</sql>
+
+	<!-- 插入记录 -->
+	<!--selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，  
+        keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应  
+        order AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键，  
+              BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了，  
+                    这种适合那种主键不是自增的类型  
+        resultType 主键类型 -->  
+<!-- 		<selectKey resultType="java.lang.Integer"  -->
+<!-- 		order="AFTER" keyProperty="id"> -->
+<!-- 			SELECT LAST_INSERT_ID() -->
+<!-- 		</selectKey> -->
+	<insert id="insert" parameterType="Object">
+		insert into guan_li.user(user_code,user_pass,user_name,role_code,parent_code,admin)
+		values(#{userCode},#{pass},#{name},#{roleCode},#{parentCode},#{admin})
+	</insert>
+	
+	<!-- 删除记录 -->
+<delete id="delete" parameterType="Object">
+delete from guan_li.user where user_code = #{userCode} <!-- 如果传进来的参数不是实体类，那么{}里的是参数名 -->
+	</delete> 
+	
+	<delete id="deleteModel" parameterType="Object">
+		delete from guan_li.user
+<include refid="Example_Where_Clause" />
+	</delete> 
+
+	<!-- 根据，修改记录 -->
+<!-- 	<update id="update" parameterType="Object"> -->
+<!-- 		update st_jsp.user set -->
+<!-- 		username = #{name}, password = #{pass} -->
+<!-- 		where usercode = #{code} -->
+<!-- 	</update> -->
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateActive" parameterType="Object">
+		update guan_li.user set 
+		<trim suffixOverrides=",">
+			<if test="name != null and name != '' ">
+				user_name = #{name},
+			</if>
+			<if test="pass != null and pass != '' ">
+				user_pass = #{pass},
+			</if>
+				<if test="roleCode != null and roleCode != '' ">
+				role_code = #{roleCode},
+			</if>
+			<if test="parentCode != null and parentCode != '' ">
+				parent_code = #{parentCode},
+			</if>
+				<if test="roleName != null and roleName != '' ">
+				role_name = #{roleName},
+			</if>
+		</trim>
+		where user_code = #{userCode}
+	</update>
+
+	<!-- 根据查询 系统用户 -->
+	<select id="selectId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.user where user_code = #{userCode}
+	</select>
+
+	<!-- 系统用户 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer" 
+	parameterType="Object">
+		select count(1) from guan_li.user
+		<include refid="Example_Where_Clause" />
+	</select>
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="UserModel">
+		select <include refid="Base_Column_List" />
+		from guan_li.user
+		<include refid="Example_Where_Clause" />
+		 limit ${rowStart},${pageLimit}
+	</select>
+	<select id="selectList" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.user
+		<include refid="Example_Where_Clause" />
+		
+	</select>
+	
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.user
+		<include refid="Example_Where_Clause" />
+	</select>
+
+</mapper>   

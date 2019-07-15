@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.situ.crm.kehu.mapper.OrderInfoMapper"><!-- mapper.java文件的全类名 -->
+	<!-- Result Map -->
+	<resultMap id="BaseResultMap" type="com.situ.crm.kehu.model.OrderInfoModel">
+		<result column="id" property="id" />
+	    <result column="user_code" property="userCode" />
+		<result column="cust_code" property="custCode" />
+	    <result column="pro_name" property="proName" />
+	    <result column="count" property="count" />
+	    <result column="time" property="TIME" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<!-- table all fields   sql片段 -->
+	<sql id="Base_Column_List">
+		id,
+		(select u.user_code from guan_li.user u where u.user_code=guan_li.order_info.user_code)user_code,
+		(select o.cust_code from guan_li.customer_info o where o.cust_code=guan_li.order_info.cust_code)cust_code,
+		(select q.pro_name from guan_li.product_info q where q.pro_name=guan_li.order_info.pro_name)pro_name,
+		count,time,status
+	</sql>
+	<!-- 查询条件 （sql片段）-->
+	<sql id="Example_Where_Clause">
+		where 1=1 
+<!--  	<if test="id != 0">  -->
+<!--   				and id = #{id}   -->
+<!--  			</if>   -->
+			<if test="userCode != null and userCode != ''">
+				and user_code = #{userCode}
+			</if>
+			<if test="custCode != null and custCode != ''">
+				and cust_code = #{custCode}
+			</if>
+			<if test="proName != null and proName != ''">
+				and pro_name = #{proName}
+			</if>
+			<if test="count != null and count != ''">
+				and count like #{count}
+			</if>
+			<if test="TIME != null and TIME != ''">
+				and time = #{TIME}
+			</if>
+			<if test="status != null and status != ''">
+				and status = #{status}
+			</if>
+	</sql>
+
+	<!-- 插入记录 -->
+	<!--selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，  
+        keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应  
+        order AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键，  
+              BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了，  
+                    这种适合那种主键不是自增的类型  
+        resultType 主键类型 -->  
+<!-- 		<selectKey resultType="java.lang.Integer"  -->
+<!-- 		order="AFTER" keyProperty="id"> -->
+<!-- 			SELECT LAST_INSERT_ID() -->
+<!-- 		</selectKey> -->
+	<insert id="insert" parameterType="Object">
+		insert into guan_li.order_info(id,user_code,cust_code,pro_name,count,time,status)
+		values(#{id},#{userCode},#{custCode},#{proName},#{count},#{TIME},#{status})
+	</insert>
+	
+	<!-- 删除记录 -->
+<delete id="delete" parameterType="Object">
+delete from guan_li.order_info where id = #{id} 
+<!-- and cust_code = #{custCode}如果传进来的参数不是实体类，那么{}里的是参数名 -->
+	</delete> 
+	
+	<delete id="deleteModel" parameterType="Object">
+		delete from guan_li.order_info
+<include refid="Example_Where_Clause" />
+	</delete> 
+
+	<!-- 根据，修改记录 -->
+<!-- 	<update id="update" parameterType="Object"> -->
+<!-- 		update st_jsp.user set -->
+<!-- 		username = #{name}, password = #{pass} -->
+<!-- 		where usercode = #{code} -->
+<!-- 	</update> -->
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateActive" parameterType="Object">
+		update guan_li.order_info set 
+		<trim suffixOverrides=",">
+<!-- 		<if test="userCode != null and userCode != ''"> -->
+<!-- 				 user_code = #{userCode}, -->
+<!-- 			</if> -->
+<!-- 			<if test="custCode != null and custCode != ''"> -->
+<!-- 				 cust_code = #{custCode}, -->
+<!-- 			</if> -->
+<!-- 			<if test="proName != null and proName != ''"> -->
+<!-- 				 pro_name = #{proName}, -->
+<!-- 			</if> -->
+			<if test="count != null and count != ''">
+				 count = #{count},
+			</if>
+			<if test="TIME != null and TIME != ''">
+				 time = #{TIME},
+			</if>
+			<if test="status != null and status != ''">
+				 status = #{status},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<!-- 根据查询 系统用户 -->
+	<select id="selectId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.order_info where id = #{id}
+	</select>
+	<!-- 系统用户 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer" 
+	parameterType="Object">
+		select count(1) from guan_li.order_info
+		<include refid="Example_Where_Clause" />
+	</select>
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="CustInfoModel">
+		select <include refid="Base_Column_List" />
+		from guan_li.order_info
+		<include refid="Example_Where_Clause" />
+		 limit ${rowStart},${pageLimit}
+	</select>
+	<select id="selectList" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.order_info
+		<include refid="Example_Where_Clause" />
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from guan_li.order_info
+		<include refid="Example_Where_Clause" />
+	</select>
+	<!-- 	统计销量 -->
+	<select id="selectSum" resultMap="BaseResultMap" parameterType="Object">
+	select pro_name,count from guan_li.order_info;
+	</select>
+</mapper>   
